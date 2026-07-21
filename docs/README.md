@@ -10,7 +10,7 @@ The first supported version is **Classic 0.0.13a_03** (released May 22, 2009 —
 
 ## Goals
 
-- **Modern modding on old versions** — Mixin patching, event system, registry, mappings
+- **Modern modding on old versions** — custom bytecode patching, event system, registry, mappings
 - **Developer-friendly API** — mod developers never touch obfuscated game internals
 - **Multi-mod coexistence** — mods are separate jars that load together cleanly
 - **Per-version support** — each Minecraft version gets its own mapping set and adapter
@@ -20,7 +20,7 @@ The first supported version is **Classic 0.0.13a_03** (released May 22, 2009 —
 
 | Feature | Description |
 |---|---|
-| **Mixin** | SpongePowered Mixin for high-level bytecode patching |
+| **Bytecode Patching** | Custom patching system built from scratch (no external dependency) |
 | **Mappings** | Intermediary mappings so mods use stable names, not obfuscated ones |
 | **Event Bus** | `@SubscribeEvent` annotation-based, auto-discovery, compile-time type safety |
 | **Registry** | Register custom blocks, items, entities, etc. |
@@ -48,7 +48,7 @@ Only versions available in the official launcher or archived-but-accessible will
 
 ## Quick Start
 
-> Documentation phase — no code yet. Quick start will be added once the loader is functional.
+> In development — Java agent and class loading interception implemented. Quick start will be added once the loader is functional.
 
 ## Project Structure
 
@@ -66,8 +66,8 @@ RetroLoader/
 ├── retroloader-event/               # Event bus implementation, event base classes,
 │                                    #   dispatch logic
 ├── retroloader-registry/            # Registry system — blocks, items, entities
-├── retroloader-mixin/               # Mixin integration — wraps SpongePowered Mixin,
-│                                    #   discovery, config
+├── retroloader-patcher/             # Custom bytecode patching — injection, overwrite,
+│                                    #   redirect, discovery, config
 ├── retroloader-mappings/            # Intermediary mapping system, remapping at
 │                                    #   load/build time
 ├── retroloader-core/                # Mod discovery, metadata parsing, dependency

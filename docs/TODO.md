@@ -21,7 +21,7 @@
 - [ ] Mod discovery (scan `mods/` directory)
 - [ ] Mod metadata parsing
 - [ ] Dependency resolution and sorting
-- [ ] Mixin integration (SpongePowered Mixin)
+- [ ] Custom bytecode patcher (built from scratch, ASM-based)
 - [ ] Mapping system implementation
 - [ ] Logging framework
 

@@ -9,7 +9,7 @@ RetroLoader is a modern modloader targeting Minecraft versions before release 1.
 | Decision | Choice | Rationale |
 |---|---|---|
 | Language | Java | Minecraft is Java; modding ecosystem is Java |
-| Patching | SpongePowered Mixin | Industry standard, developer-friendly, proven in Fabric/NeoForge |
+| Patching | Custom bytecode patching (built from scratch) | No external dependency, full control, designed for old class files |
 | Mappings | Intermediary stable layer | Mods use stable names; game version updates don't break mods |
 | Event listening | `@SubscribeEvent` (NeoForge-style) | Familiar, less boilerplate |
 | Event creation | NeoForge-style event classes | Simple, extensible |
@@ -27,7 +27,7 @@ RetroLoader is a modern modloader targeting Minecraft versions before release 1.
 | `retroloader-api` | Public API — `@RetroMod`, `@SubscribeEvent`, `ModInitializer`, `ModContext` |
 | `retroloader-event` | Event bus implementation, event base classes, dispatch logic |
 | `retroloader-registry` | Registry system — blocks, items, entities registration |
-| `retroloader-mixin` | Mixin integration — wraps SpongePowered Mixin, discovery, config |
+| `retroloader-patcher` | Custom bytecode patching — injection, overwrite, redirect, discovery, config |
 | `retroloader-mappings` | Intermediary mapping system, remapping at load/build time |
 | `retroloader-core` | Mod discovery, metadata parsing, dependency resolution, loading orchestration |
 | `retroloader-runtime` | Java agent entry point, class loading interception, bootstrap |
@@ -45,7 +45,7 @@ RetroLoader is a modern modloader targeting Minecraft versions before release 1.
 │  @RetroMod · ModInitializer · ModContext               │
 ├─────────────────────────────────────────────────────┤
 │  retroloader-event │ retroloader-registry │            │
-│  retroloader-mixin │ retroloader-mappings              │
+│  retroloader-patcher │ retroloader-mappings             │
 ├─────────────────────────────────────────────────────┤
 │              retroloader-core (orchestration)           │
 │  Mod discovery · Dependency resolution ·               │
@@ -54,8 +54,8 @@ RetroLoader is a modern modloader targeting Minecraft versions before release 1.
 │            retroloader-runtime (bootstrap)              │
 │  Java agent · Class loading interception               │
 ├─────────────────────────────────────────────────────┤
-│             Mixin (SpongePowered)                      │
-│  Bytecode injection at runtime                         │
+│          retroloader-patcher (custom)                  │
+│  Bytecode injection at runtime (ASM-based)             │
 ├─────────────────────────────────────────────────────┤
 │       Minecraft (target game version)                  │
 │  com.mojang.minecraft.* (obfuscated or not)            │
@@ -69,7 +69,7 @@ retroloader-runtime
   └── retroloader-core
         ├── retroloader-event
         ├── retroloader-registry
-        ├── retroloader-mixin
+        ├── retroloader-patcher
         └── retroloader-mappings
               └── versions/classic-0.0.13a_03/
 
@@ -89,7 +89,7 @@ retroloader-tools (standalone CLI)
 2. **RetroLoader initializes** — discovers mods in `mods/` directory
 3. **Mappings loaded** — intermediary mappings for the target game version
 4. **Dependency resolution** — mods sorted by dependencies, conflicts detected
-5. **Mixin application** — registered mixins applied to game classes as they load
+5. **Patch application** — registered bytecode patches applied to game classes as they load
 6. **Event bus initialized** — event classes registered
 7. **Mod initialization** — mods receive init events in dependency order
 8. **Game starts** — Minecraft runs with patches and mods applied
@@ -160,22 +160,22 @@ Classic 0.0.13a_03 uses unobfuscated class names (e.g., `com.mojang.minecraft.Mi
 
 This version is **not obfuscated** — class names are already readable (`com.mojang.minecraft.Minecraft`, `com.mojang.minecraft.level.Level`, etc.). The intermediary mapping for this version will be close to 1:1, but still provides a stable layer for future obfuscated versions.
 
-## Mixin Usage
+## Bytecode Patching
 
-Mods use Mixin to patch game classes without modifying the original jar:
+RetroLoader has its own bytecode patching system built from scratch (no SpongePowered Mixin). Mods use annotations to patch game classes without modifying the original jar:
 
 ```java
-@Mixin(com.mojang.minecraft.Minecraft.class)
-public class MinecraftMixin {
+@Patch(com.mojang.minecraft.Minecraft.class)
+public class MinecraftPatch {
 
-    @Inject(method = "run()V", at = @At("HEAD"))
-    private void onGameStart(CallbackInfo ci) {
+    @Inject(method = "run", at = @At("HEAD"))
+    private void onGameStart(PatchContext ctx) {
         // Custom code runs before the game loop starts
     }
 }
 ```
 
-RetroLoader handles Mixin discovery and application automatically. Mods declare their mixin classes in mod metadata.
+RetroLoader handles patch discovery and application automatically. Mods declare their patch classes in mod metadata.
 
 ## Mod Metadata
 
@@ -195,8 +195,8 @@ Each mod includes a metadata file (format TBD — likely JSON or TOML):
   "entrypoints": {
     "main": "com.example.ExampleMod"
   },
-  "mixins": [
-    "mixins.example_mod.json"
+  "patches": [
+    "patches.example_mod.json"
   ]
 }
 ```
