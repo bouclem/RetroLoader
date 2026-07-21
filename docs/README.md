@@ -52,10 +52,37 @@ Only versions available in the official launcher or archived-but-accessible will
 
 ## Project Structure
 
+Multi-module Gradle project:
+
 ```
 RetroLoader/
-├── docs/           # Project documentation
-├── (code)          # Source code (to be created)
+├── .gitignore
+├── LICENSE                          # Apache 2.0
+├── docs/                            # Internal project documentation
+├── wiki/                            # User & developer guides (how to use, how to mod)
+│
+├── retroloader-api/                 # Public API — @RetroMod, @SubscribeEvent,
+│                                    #   ModInitializer, ModContext
+├── retroloader-event/               # Event bus implementation, event base classes,
+│                                    #   dispatch logic
+├── retroloader-registry/            # Registry system — blocks, items, entities
+├── retroloader-mixin/               # Mixin integration — wraps SpongePowered Mixin,
+│                                    #   discovery, config
+├── retroloader-mappings/            # Intermediary mapping system, remapping at
+│                                    #   load/build time
+├── retroloader-core/                # Mod discovery, metadata parsing, dependency
+│                                    #   resolution, loading orchestration
+├── retroloader-runtime/             # Java agent entry point, class loading
+│                                    #   interception, bootstrap
+├── retroloader-gradle/              # Gradle plugin — dev env, mapping application,
+│                                    #   mod packaging
+├── retroloader-tools/               # CLI utilities — mapping generation, decompile
+│                                    #   helpers, diagnostics
+│
+└── versions/                        # Per-version adapters & mappings
+    └── classic-0.0.13a_03/          #   Classic 0.0.13a_03 (first target)
+        ├── mappings/                #     Intermediary mapping files
+        └── adapter/                 #     Version-specific hooks & patches
 ```
 
 See [PROJECT.md](PROJECT.md) for architecture and design details.
