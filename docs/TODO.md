@@ -1,6 +1,6 @@
 # RetroLoader — Roadmap
 
-## Phase 1: Documentation (current)
+## Phase 1: Documentation
 
 - [x] Define project scope and goals
 - [x] Choose technical stack (Mixin, mappings, event system, API design)
@@ -13,10 +13,11 @@
 - [ ] Document event list for Classic 0.0.13a_03
 - [ ] Design Gradle plugin specification
 
-## Phase 2: Core Loader
+## Phase 2: Core Loader (current)
 
-- [ ] Java agent entry point
-- [ ] Class loading interception
+- [x] Gradle project setup (wrapper, root build, gradle.properties)
+- [x] Java agent entry point (`RetroAgent.premain`)
+- [x] Class loading interception (delegating `RetroClassTransformer`)
 - [ ] Mod discovery (scan `mods/` directory)
 - [ ] Mod metadata parsing
 - [ ] Dependency resolution and sorting

@@ -1,0 +1,11 @@
+jar {
+    manifest {
+        attributes(
+            'Premain-Class': 'retroloader.runtime.RetroAgent',
+            'Can-Redefine-Classes': 'true',
+            'Can-Retransform-Classes': 'true',
+            'Implementation-Title': 'RetroLoader Runtime',
+            'Implementation-Version': project.version
+        )
+    }
+}
