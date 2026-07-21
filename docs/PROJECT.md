@@ -20,28 +20,67 @@ RetroLoader is a modern modloader targeting Minecraft versions before release 1.
 
 ## Architecture
 
+### Module Layout
+
+| Module | Responsibility |
+|---|---|
+| `retroloader-api` | Public API — `@RetroMod`, `@SubscribeEvent`, `ModInitializer`, `ModContext` |
+| `retroloader-event` | Event bus implementation, event base classes, dispatch logic |
+| `retroloader-registry` | Registry system — blocks, items, entities registration |
+| `retroloader-mixin` | Mixin integration — wraps SpongePowered Mixin, discovery, config |
+| `retroloader-mappings` | Intermediary mapping system, remapping at load/build time |
+| `retroloader-core` | Mod discovery, metadata parsing, dependency resolution, loading orchestration |
+| `retroloader-runtime` | Java agent entry point, class loading interception, bootstrap |
+| `retroloader-gradle` | Gradle plugin — dev env, mapping application, mod packaging |
+| `retroloader-tools` | CLI utilities — mapping generation, decompile helpers, diagnostics |
+| `versions/` | Per-version adapters & mappings (one subfolder per MC version) |
+
 ### Layers (bottom to top)
 
 ```
-┌─────────────────────────────────────────────┐
-│              Mod (developer code)             │
-├─────────────────────────────────────────────┤
-│         retroloader.api (public API)          │
-│  Events · Registry · Mixin support · Hooks    │
-├─────────────────────────────────────────────┤
-│       retroloader (loader internals)          │
-│  Mod discovery · Dependency resolution ·      │
-│  Mapping application · Class transformation   │
-├─────────────────────────────────────────────┤
-│          Mixin (SpongePowered)                │
-│  Bytecode injection at runtime                │
-├─────────────────────────────────────────────┤
-│         Java Agent / Class Loader             │
-│  Intercepts class loading                     │
-├─────────────────────────────────────────────┤
-│       Minecraft (target game version)         │
-│  com.mojang.minecraft.* (obfuscated)          │
-└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│                  Mod (developer code)                  │
+├─────────────────────────────────────────────────────┤
+│              retroloader-api (public API)              │
+│  @RetroMod · ModInitializer · ModContext               │
+├─────────────────────────────────────────────────────┤
+│  retroloader-event │ retroloader-registry │            │
+│  retroloader-mixin │ retroloader-mappings              │
+├─────────────────────────────────────────────────────┤
+│              retroloader-core (orchestration)           │
+│  Mod discovery · Dependency resolution ·               │
+│  Metadata parsing · Loading sequence                   │
+├─────────────────────────────────────────────────────┤
+│            retroloader-runtime (bootstrap)              │
+│  Java agent · Class loading interception               │
+├─────────────────────────────────────────────────────┤
+│             Mixin (SpongePowered)                      │
+│  Bytecode injection at runtime                         │
+├─────────────────────────────────────────────────────┤
+│       Minecraft (target game version)                  │
+│  com.mojang.minecraft.* (obfuscated or not)            │
+└─────────────────────────────────────────────────────┘
+```
+
+### Module Dependencies
+
+```
+retroloader-runtime
+  └── retroloader-core
+        ├── retroloader-event
+        ├── retroloader-registry
+        ├── retroloader-mixin
+        └── retroloader-mappings
+              └── versions/classic-0.0.13a_03/
+
+retroloader-api (standalone — mod developers depend on this only)
+  references: retroloader-event, retroloader-registry (API interfaces)
+
+retroloader-gradle (standalone build tool)
+  references: retroloader-mappings, retroloader-tools
+
+retroloader-tools (standalone CLI)
+  references: retroloader-mappings
 ```
 
 ### Loading Sequence

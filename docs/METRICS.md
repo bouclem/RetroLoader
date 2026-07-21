@@ -9,6 +9,8 @@ Track project metrics over time. Compare to previous state, flag regressions.
 | Phase | 1 — Documentation |
 | Source files | 0 |
 | Documentation files | 6 |
+| Other files | 2 (LICENSE, .gitignore) |
+| Planned modules | 9 + versions/ |
 | Test files | 0 |
 | Test coverage | N/A |
 | Dependencies | 0 |
