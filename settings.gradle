@@ -1,3 +1,4 @@
 rootProject.name = 'RetroLoader'
 
 include 'retroloader-runtime'
+include 'retroloader-core'

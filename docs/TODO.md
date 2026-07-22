@@ -8,7 +8,7 @@
 - [x] Write architecture document
 - [ ] Research Mixin compatibility with very old class files (Java 1.1 / Java 5 era)
 - [ ] Define intermediary mapping format
-- [ ] Define mod metadata format (finalize JSON vs TOML)
+- [x] Define mod metadata format (TOML — `retroloader.mod.toml`)
 - [ ] Design registry system (blocks, items, entities)
 - [ ] Document event list for Classic 0.0.13a_03
 - [ ] Design Gradle plugin specification
@@ -18,8 +18,8 @@
 - [x] Gradle project setup (wrapper, root build, gradle.properties)
 - [x] Java agent entry point (`RetroAgent.premain`)
 - [x] Class loading interception (delegating `RetroClassTransformer`)
-- [ ] Mod discovery (scan `mods/` directory)
-- [ ] Mod metadata parsing
+- [x] Mod discovery (scan `mods/` directory)
+- [x] Mod metadata parsing
 - [ ] Dependency resolution and sorting
 - [ ] Custom bytecode patcher (built from scratch, ASM-based)
 - [ ] Mapping system implementation

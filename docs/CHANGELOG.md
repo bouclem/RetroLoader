@@ -1,5 +1,21 @@
 # RetroLoader — Changelog
 
+## [0.0.2] - 2026-07-22
+
+### Added
+- `retroloader-core` module: mod discovery, metadata parsing, version download & decompile
+  - `ModDiscovery` — scans `mods/` directory for jar files
+  - `ModMetadata` — record class for parsed mod metadata (id, version, name, dependencies, entrypoints, patches)
+  - `ModMetadataParser` — reads & parses `retroloader.mod.toml` from inside mod jars using night-config TOML parser
+  - `ModContainer` — holds mod metadata + jar path + isolated URLClassLoader
+  - `VersionDownloader` — downloads MC client jar (Mojang manifest first, archive fallback for non-launcher versions)
+  - `VersionDecompiler` — decompiles MC client jar using Vineflower for mod development
+- Finalized mod metadata format as TOML (`retroloader.mod.toml`)
+- Dependencies: night-config TOML 3.8.1, Vineflower 1.12.0
+
+### Changed
+- `settings.gradle` — added `retroloader-core` module
+
 ## [0.0.1] - 2026-07-21
 
 ### Added

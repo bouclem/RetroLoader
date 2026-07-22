@@ -1,0 +1,4 @@
+dependencies {
+    implementation 'com.electronwill.night-config:toml:3.8.1'
+    implementation 'org.vineflower:vineflower:1.12.0'
+}
